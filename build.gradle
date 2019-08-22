@@ -1,0 +1,10 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+
+
+repositories {
+    mavenCentral()
+    maven { url "http://packages.confluent.io/maven" }
+    maven { url "https://www.myget.org/F/snagajob/auth/${mygetToken}/maven/" }
+    mavenLocal()
+}
