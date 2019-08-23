@@ -1,10 +1,80 @@
-apply plugin: 'idea'
-apply plugin: 'java'
+buildscript {
+    repositories {
+        maven {
+            url "${artifactory_url}"
+            credentials {
+                username "snag"
+                password "${mygetToken}"
+            }
+        }
+        maven { url "${confluent_url}"}
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.netflix.nebula', name: 'gradle-ospackage-plugin', version: "${nebula_version}"
+    }
+}
 
+allprojects {
+    project.version = "${current_version}"
+    project.group = "co.snag"
+}
 
-repositories {
-    mavenCentral()
-    maven { url "http://packages.confluent.io/maven" }
-    maven { url "https://www.myget.org/F/snagajob/auth/${mygetToken}/maven/" }
-    mavenLocal()
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.palantir.docker'
+    apply plugin: 'com.palantir.git-version'
+    apply plugin: 'maven-publish'
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    repositories {
+        maven { url "${artifactory_url}"}
+        maven { url "${confluent_url}"}
+        mavenCentral()
+        mavenLocal()
+    }
+
+    dependencies {
+        // base test dependencies
+        testCompile group: 'junit', name: 'junit', version: "${junit_version}"
+        testCompile group: 'org.mockito', name: 'mockito-all', version: "${mockito_version}"
+    }
+
+    idea {
+        module {
+            downloadSources = true
+            downloadJavadoc = true
+        }
+    }
+
+    jar {
+        manifest {
+            attributes 'Version': project.version
+            attributes 'Implementation-Title': project.name
+            attributes 'Implementation-Version': project.version
+        }
+        exclude "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+    }
+}
+
+// build rpm
+apply plugin: 'nebula.rpm'
+
+task rpm(type: Rpm) {
+    packageName 'streams-processor'
+    packageDescription 'signal processor'
+    url 'https://snagajob.atlassian.net/wiki/spaces/EN/pages/301367322/Signals+Platform'
+
+    // add invidual sub projects rpm builds
+}
+
+task streamBuild {
+    dependsOn "rpm"
 }
