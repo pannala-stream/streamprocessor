@@ -1,0 +1,8 @@
+dependencies {
+    //Confluent dependencies
+    compile group: 'org.apache.kafka', name: 'kafka-streams', version: "${kafka_stream_version}"
+    compile group: 'com.google.guava', name: 'guava', version: "${guava_version}"
+
+    // logger
+    compile group: 'org.slf4j', name: 'slf4j-api', version: "${slf4j_version}"
+}

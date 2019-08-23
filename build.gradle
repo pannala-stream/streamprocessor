@@ -10,6 +10,7 @@ buildscript {
         maven { url "${confluent_url}"}
         mavenCentral()
         mavenLocal()
+        jcenter()
     }
     dependencies {
         classpath group: 'com.netflix.nebula', name: 'gradle-ospackage-plugin', version: "${nebula_version}"

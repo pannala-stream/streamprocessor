@@ -1,3 +1,8 @@
 rootProject.name = 'streams-processor'
-include 'configuration'
+include 'common'
+include 'sources'
+include 'sinks'
+include 'processors'
+include 'topologies'
+include 'signal-objects'
 
